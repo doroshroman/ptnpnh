@@ -1,1 +1,2 @@
 cloudscraper==1.2.58
+shodan

